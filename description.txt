@@ -1,0 +1,3 @@
+This mod allows you to replace furnitures, by placing one of the same type, on the top of another already placed.
+
+The mod is in testing state, so use with caution. Also, there's furniture support missing, which I'll add another time.

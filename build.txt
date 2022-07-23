@@ -1,0 +1,3 @@
+displayName = Replace Furniture
+author = Nakano15
+version = 0.5
