@@ -1,4 +1,4 @@
-# replacefurnituremod
+# Replace Furniture Mod
 This mod allows replacing furnitures by placing one of a type on top of another of the same type.
 As of the moment of writing this readme, the following furnitures have support:
 <br><br>
