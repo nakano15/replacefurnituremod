@@ -8,8 +8,11 @@ namespace replacefurnituremod
 {
     public class playermod : ModPlayer
     {
-        private static readonly ushort[] Tables = new ushort[] { TileID.Tables, TileID.Tables2 };
+        private static readonly ushort[] Tables = new ushort[] { TileID.Tables, TileID.Tables2, TileID.TinkerersWorkbench };
         private static readonly ushort[] Chests = new ushort[] { TileID.Containers, TileID.Containers2 };
+        private static readonly ushort[] Anvils = new ushort[] { TileID.Anvils, TileID.MythrilAnvil };
+        private static readonly ushort[] Furnaces = new ushort[] { TileID.Furnaces, TileID.Hellforge, TileID.AdamantiteForge };
+        private static readonly ushort[] Signs = new ushort[] { TileID.Signs, TileID.AnnouncementBox };
 
         public static bool IsReplacement = false;
 
@@ -27,7 +30,6 @@ namespace replacefurnituremod
                     IsReplacement = true;
                 }
             }
-
             return base.PreItemCheck();
         }
 
@@ -71,13 +73,28 @@ namespace replacefurnituremod
                 case TileID.Lamps:
                 case TileID.Candles:
                 case TileID.Candelabras:
+                case TileID.Sinks:
+                case TileID.Tombstones:
+                case TileID.Pianos:
+                    //case TileID.Dressers:
                     return TileType == NewTileType;
                 case TileID.Tables:
                 case TileID.Tables2:
+                case TileID.TinkerersWorkbench:
                     return Tables.Contains((ushort)NewTileType);
-                case TileID.Containers:
+                case TileID.Anvils:
+                case TileID.MythrilAnvil:
+                    return Anvils.Contains((ushort)NewTileType);
+                case TileID.Furnaces:
+                case TileID.Hellforge:
+                case TileID.AdamantiteForge:
+                    return Furnaces.Contains((ushort)NewTileType);
+                /*case TileID.Containers:
                 case TileID.Containers2:
-                    return Chests.Contains((ushort)NewTileType);
+                    return Chests.Contains((ushort)NewTileType);*/
+                case TileID.Signs:
+                case TileID.AnnouncementBox:
+                    return Signs.Contains((ushort)NewTileType);
             }
             return false;
         }
@@ -250,6 +267,154 @@ namespace replacefurnituremod
                             DepleteItem = true;
                         }
                         break;
+                    case TileID.Pianos:
+                        {
+                            short TileFrameX = (short)(tile.frameX % 54),
+                                TileFrameY = (short)(tile.frameY % 36);
+                            int PlaceX = x, PlaceY = y;
+                            if (TileFrameX < 18)
+                                PlaceX++;
+                            if (TileFrameX > 18)
+                                PlaceX--;
+                            if (TileFrameY < 18)
+                                PlaceY++;
+                            WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
+                            WorldGen.PlaceTile(PlaceX, PlaceY, type, style: style);
+                            WorldGen.SquareTileFrame(x, y, true);
+                            DepleteItem = true;
+                        }
+                        break;
+                    case TileID.Tombstones:
+                        {
+                            short TileFrameX = (short)(tile.frameX % 36),
+                                TileFrameY = (short)(tile.frameY % 36);
+                            int PlaceX = x, PlaceY = y;
+                            //if (TileFrameX < 18)
+                            //    PlaceX++;
+                            if (TileFrameX >= 18)
+                                PlaceX--;
+                            if (TileFrameY < 18)
+                                PlaceY++;
+                            int SignPosition = Sign.ReadSign(PlaceX, PlaceY, false);
+                            int SignXBackup = -1;
+                            if (SignPosition != -1)
+                            {
+                                SignXBackup = Main.sign[SignPosition].x;
+                                Main.sign[SignPosition].x = -1;
+                            }
+                            WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
+                            WorldGen.PlaceTile(PlaceX, PlaceY, type, style: style);
+                            WorldGen.SquareTileFrame(x, y, true);
+                            if (SignPosition != -1)
+                                Main.sign[SignPosition].x = SignXBackup;
+                            DepleteItem = true;
+                        }
+                        break;
+                    case TileID.Signs:
+                    case TileID.AnnouncementBox:
+                        {
+                            short TileFrameX = (short)(tile.frameX % 36),
+                                TileFrameY = (short)(tile.frameY % 20);
+                            int PlaceX = x, PlaceY = y;
+                            byte PlacementOrientation = (byte)(tile.frameX / 36);
+                            switch(PlacementOrientation)
+                            {
+                                default:
+                                    if (TileFrameX >= 18)
+                                        PlaceX--;
+                                    if (TileFrameY < 18)
+                                        PlaceY++;
+                                    break;
+                                case 1:
+                                case 2:
+                                case 4:
+                                    if (TileFrameX >= 18)
+                                        PlaceX--;
+                                    if (TileFrameY >= 18)
+                                        PlaceY--;
+                                    break;
+                                case 3:
+                                    if (TileFrameX < 18)
+                                        PlaceX++;
+                                    if (TileFrameY >= 18)
+                                        PlaceY--;
+                                    break;
+                            }
+                            //if (TileFrameX < 18)
+                            //    PlaceX++;
+                            //if (TileFrameX >= 18)
+                            //    PlaceX--;
+                            //if (TileFrameY < 18)
+                            //    PlaceY++;
+                            int SignPosition = Sign.ReadSign(PlaceX, PlaceY, false);
+                            int SignXBackup = -1;
+                            if (SignPosition != -1)
+                            {
+                                SignXBackup = Main.sign[SignPosition].x;
+                                Main.sign[SignPosition].x = -1;
+                            }
+                            WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
+                            WorldGen.PlaceTile(PlaceX, PlaceY, type, style: style);
+                            WorldGen.SquareTileFrame(x, y, true);
+                            if (SignPosition != -1)
+                                Main.sign[SignPosition].x = SignXBackup;
+                            DepleteItem = true;
+                        }
+                        break;
+                    case TileID.Sinks:
+                        {
+                            short TileFrameX = (short)(tile.frameX % 36),
+                                TileFrameY = (short)(tile.frameY % 38);
+                            int PlaceX = x, PlaceY = y;
+                            //if (TileFrameX < 18)
+                            //    PlaceX++;
+                            if (TileFrameX < 18)
+                                PlaceX++;
+                            if (TileFrameY < 18)
+                                PlaceY++;
+                            WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
+                            WorldGen.PlaceTile(PlaceX, PlaceY, type, style: style);
+                            WorldGen.SquareTileFrame(x, y, true);
+                            DepleteItem = true;
+                        }
+                        break;
+                    case TileID.Furnaces:
+                    case TileID.Hellforge:
+                    case TileID.AdamantiteForge:
+                        {
+                            short TileFrameX = (short)(tile.frameX % 54),
+                                TileFrameY = (short)(tile.frameY % 38);
+                            int PlaceX = x, PlaceY = y;
+                            if (TileFrameX < 18)
+                                PlaceX++;
+                            if (TileFrameX > 18)
+                                PlaceX--;
+                            if (TileFrameY < 18)
+                                PlaceY++;
+                            WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
+                            WorldGen.PlaceTile(PlaceX, PlaceY, type, style: style);
+                            WorldGen.SquareTileFrame(x, y, true);
+                            DepleteItem = true;
+                        }
+                        break;
+                    case TileID.Anvils:
+                    case TileID.MythrilAnvil:
+                        {
+                            short TileFrameX = (short)(tile.frameX % 36),
+                                TileFrameY = (short)(tile.frameY % 20);
+                            int PlaceX = x, PlaceY = y;
+                            //if (TileFrameX < 18)
+                            //    PlaceX++;
+                            if (TileFrameX >= 18)
+                                PlaceX--;
+                            //if (TileFrameY < 18)
+                            //    PlaceY++;
+                            WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
+                            WorldGen.PlaceTile(PlaceX, PlaceY, type, style: style);
+                            WorldGen.SquareTileFrame(x, y, true);
+                            DepleteItem = true;
+                        }
+                        break;
                     case TileID.Benches:
                         {
                             short TileFrameX = (short)(tile.frameX % 54),
@@ -269,6 +434,7 @@ namespace replacefurnituremod
                         break;
                     case TileID.Tables:
                     case TileID.Tables2:
+                    case TileID.TinkerersWorkbench:
                         {
                             short TileFrameX = (short)(tile.frameX % 54),
                                 TileFrameY = (short)(tile.frameY % 38);
@@ -282,6 +448,33 @@ namespace replacefurnituremod
                             WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
                             WorldGen.PlaceTile(PlaceX, PlaceY, type, style: style);
                             WorldGen.SquareTileFrame(x, y, true);
+                            DepleteItem = true;
+                        }
+                        break;
+                    case TileID.Dressers: //bugged
+                        {
+                            short TileFrameX = (short)(tile.frameX % 54),
+                                TileFrameY = (short)(tile.frameY % 36);
+                            int PlaceX = x, PlaceY = y;
+                            if (TileFrameX < 18)
+                                PlaceX++;
+                            if (TileFrameX > 18)
+                                PlaceX--;
+                            if (TileFrameY < 18)
+                                PlaceY++;
+                            int ChestPos = Chest.FindChest(PlaceX - 1, PlaceY - 1), XBackup = -1;
+                            if(ChestPos > -1)
+                            {
+                                XBackup = Main.chest[ChestPos].x;
+                                Main.chest[ChestPos].x = -1;
+                            }
+                            WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
+                            WorldGen.PlaceTile(PlaceX, PlaceY, type, style: style);
+                            WorldGen.SquareTileFrame(PlaceX, PlaceY, true);
+                            if (ChestPos > -1)
+                            {
+                                Main.chest[ChestPos].x = XBackup;
+                            }
                             DepleteItem = true;
                         }
                         break;
@@ -329,6 +522,7 @@ namespace replacefurnituremod
                                 ChestXBackup = Main.chest[ChestPosition].x;
                                 Main.chest[ChestPosition].x = -1;
                             }
+                            PlaceY++;
                             WorldGen.KillTile(PlaceX, PlaceY, false, false, false);
                             if (ChestPosition > -1)
                             {

@@ -1,0 +1,5 @@
+﻿Added support to Sinks, Workbenches, Tombstones, Signs, Pianos and Anvils.
+Tinkerers Workbench is now recognized as a table, and can replace tables when placed on top of one.
+	Try not to uglify your house with this, though.
+Disabled chest replacement due to bugs.
+	For the same reason, Dressers can't be manually replaced too.
